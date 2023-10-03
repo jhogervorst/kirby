@@ -30,6 +30,8 @@
 					class="k-panel-menu-button"
 				/>
 			</menu>
+
+			<k-activation />
 		</div>
 
 		<!-- Collapse/expand toggle -->
