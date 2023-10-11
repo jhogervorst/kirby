@@ -1,5 +1,8 @@
 <?php
 
+use Kirby\Cms\File;
+use Kirby\Filesystem\F;
+
 // routing pattern to match all models with files
 $filePattern = '(account/|pages/[^/]+/|site/|users/[^/]+/|)files/(:any)';
 $parentPattern = '(account|pages/[^/]+|site|users/[^/]+)/files';
@@ -39,17 +42,32 @@ return [
 			// move_uploaded_file() not working with unit test
 			// @codeCoverageIgnoreStart
 			return $this->upload(function ($source, $filename) use ($path) {
+				$sort     = $this->requestBody('sort');
+				$template = $this->requestBody('template');
+				$parent   = $this->parent($path);
+				$filename = F::safeName($filename ?? basename($source));
+				$existing = $parent->file($filename);
+
+				// return existing file if uploaded file exact same
+				if (
+					$existing instanceof File === true &&
+					sha1_file($source) === $existing->sha1() &&
+					$template === $existing->template()
+				) {
+					return $existing;
+				}
+
 				$props = [
 					'content' => [
-						'sort' => $this->requestBody('sort')
+						'sort' => $sort
 					],
 					'source'   => $source,
-					'template' => $this->requestBody('template'),
+					'template' => $template,
 					'filename' => $filename
 				];
 
 				// move the source file from the temp dir
-				return $this->parent($path)->createFile($props, true);
+				return $parent->createFile($props, true);
 			});
 			// @codeCoverageIgnoreEnd
 		}

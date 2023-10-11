@@ -229,25 +229,10 @@ trait FileActions
 		// gather content
 		$content = $props['content'] ?? [];
 
-		// make sure that a UUID gets generated
-		// and added to content right away
-		if (
-			Uuids::enabled() === true &&
-			empty($content['uuid']) === true
-		) {
-			// sets the current uuid if it is the exact same file
-			// otherwise generates new uuid
-			if ($file->exists() === true) {
-				$existing = $file->parent()->file($file->filename());
-				if (
-					$file->sha1() === $upload->sha1() &&
-					$file->template() === $existing->template()
-				) {
-					$content['uuid'] = $existing->content()->get('uuid')->value();
-				}
-			} else {
-				$content['uuid'] = Uuid::generate();
-			}
+		// make sure that a UUID gets generated and
+		// added to content right away
+		if (Uuids::enabled() === true) {
+			$content['uuid'] ??= Uuid::generate();
 		}
 
 		// create a form for the file
