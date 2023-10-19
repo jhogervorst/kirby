@@ -1,6 +1,9 @@
 <template>
 	<k-dialog
-		v-bind="$props"
+		:cancel-button="false"
+		:size="size"
+		:submit-button="false"
+		:visible="true"
 		class="k-block-selector"
 		@cancel="$emit('cancel')"
 		@submit="$emit('submit', value)"
@@ -38,20 +41,11 @@
 </template>
 
 <script>
-import Dialog from "@/mixins/dialog.js";
-
 export default {
-	mixins: [Dialog],
 	inheritAttrs: false,
 	props: {
-		// eslint-disable-next-line vue/require-prop-types
-		cancelButton: {
-			default: false
-		},
 		disabledFieldsets: {
-			default() {
-				return [];
-			},
+			default: () => [],
 			type: Array
 		},
 		fieldsets: {
@@ -63,13 +57,9 @@ export default {
 		headline: {
 			type: String
 		},
-		// eslint-disable-next-line vue/require-prop-types
 		size: {
+			type: String,
 			default: "medium"
-		},
-		// eslint-disable-next-line vue/require-prop-types
-		submitButton: {
-			default: false
 		},
 		value: {
 			default: null,
@@ -94,16 +84,16 @@ export default {
 			};
 
 			for (const key in fieldsetGroups) {
-				let group = fieldsetGroups[key];
+				const group = fieldsetGroups[key];
 
-				group.open = group.open === false ? false : true;
+				group.open = group.open !== false;
 				group.fieldsets = group.sets
-					.filter((fieldsetName) => this.fieldsets[fieldsetName])
-					.map((fieldsetName) => {
+					.filter((name) => this.fieldsets[name])
+					.map((name) => {
 						index++;
 
 						return {
-							...this.fieldsets[fieldsetName],
+							...this.fieldsets[name],
 							index
 						};
 					});
