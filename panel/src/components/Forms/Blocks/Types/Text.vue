@@ -11,11 +11,13 @@
 </template>
 
 <script>
+import Block from "./Default.vue";
+
 /**
  * @displayName BlockTypeText
- * @internal
  */
 export default {
+	extends: Block,
 	computed: {
 		component() {
 			const component = "k-" + this.textField.type + "-input";
